@@ -1,9 +1,14 @@
 ﻿<Window x:Class="Judas.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" WindowStartupLocation="CenterScreen" ResizeMode="NoResize"  Height="600" Width="600">
+        xmlns:local="clr-namespace:Judas"
+        Title="MainWindow" WindowStartupLocation="CenterScreen" ResizeMode="NoResize"  Height="600" Width="800">
     <Grid>
-        <Canvas HorizontalAlignment="Center"  Name="gameCanvas" Width="480" Height="480"
-                Background="Wheat"  Margin="10"></Canvas>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>     
+        <local:PresentBlocks Width="680" 
+                             Height="480"
+                             x:Name="gameboard"></local:PresentBlocks>
     </Grid>
 </Window>

@@ -95,9 +95,10 @@ namespace Judas
 
                    newBlock.BlockColor = (CommonTypes.BlockColor) ran.Next((int)CommonTypes.BlockColor.BlockColorRed, (int)CommonTypes.BlockColor.BlockColorPurple + 1);
                    blocks.Add(newBlock);
-                   this.JudasBlocks = blocks;
                }
            }
+
+           this.JudasBlocks = blocks;
         }
     }
 }

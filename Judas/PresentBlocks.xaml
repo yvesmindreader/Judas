@@ -1,0 +1,61 @@
+﻿<UserControl x:Class="Judas.PresentBlocks"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Judas"
+             mc:Ignorable="d" 
+             d:DesignHeight="480" d:DesignWidth="680">
+    <UserControl.Resources>
+        <local:colorconverter x:Key ="colorconverter"></local:colorconverter>
+        <local:colposconverter x:Key ="colposconverter"></local:colposconverter>
+        <local:rowposconverter x:Key ="rowposconverter"></local:rowposconverter>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+    <ItemsControl Width="480" Height="480"  ItemsSource="{Binding}">
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <Canvas x:Name="gameCanvas"></Canvas>
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+            <DataTemplate>
+                    <Rectangle MouseLeftButtonDown="Rectangle_MouseLeftButtonDown"  
+                    Width="{x:Static local:CommonTypes.BLOCKNETWIDTH }"
+                    Height="{x:Static local:CommonTypes.BLOCKNETHEIGHT}"
+                    Fill="{Binding BlockColor, Converter={StaticResource colorconverter}}"></Rectangle>                       
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+        <ItemsControl.ItemContainerStyle>
+            <Style TargetType="ContentPresenter">
+                <Setter Property="Canvas.Left" Value="{Binding Columnpos, Converter={StaticResource colposconverter}}"></Setter>
+                <Setter Property="Canvas.Top" Value="{Binding Rowpos, Converter={StaticResource rowposconverter}}"></Setter>          
+            </Style>
+        </ItemsControl.ItemContainerStyle>
+    </ItemsControl>
+        <StackPanel  Grid.Column="1">
+            <TextBox Name="txtbox" TextWrapping="Wrap" ></TextBox>
+            <TextBox Name="txtbox1" TextWrapping="Wrap"></TextBox>
+        </StackPanel>
+    </Grid>
+</UserControl>
+<!--<Border MouseLeftButtonDown="Rectangle_MouseLeftButtonDown"  
+                    Width="{x:Static local:CommonTypes.BLOCKNETWIDTH }"
+                    Height="{x:Static local:CommonTypes.BLOCKNETHEIGHT}"
+                    Background="{Binding BlockColor, Converter={StaticResource colorconverter}}">
+    <StackPanel>
+        <WrapPanel>
+            <TextBlock Text="R"></TextBlock>
+            <TextBlock Text="{Binding Rowpos}"></TextBlock>
+        </WrapPanel>
+        <WrapPanel>
+            <TextBlock Text="C"></TextBlock>
+            <TextBlock Text="{Binding Columnpos}"></TextBlock>
+        </WrapPanel>
+        <TextBlock Text="Color"  Background="{Binding BlockColor, Converter={StaticResource colorconverter}}"></TextBlock>
+    </StackPanel>
+</Border>-->

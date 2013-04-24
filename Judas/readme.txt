@@ -1,0 +1,1 @@
+﻿1. we need to auto detect single blocks 
