@@ -24,10 +24,14 @@
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
             <DataTemplate>
-                    <Rectangle MouseLeftButtonDown="Rectangle_MouseLeftButtonDown"  
+                    <Rectangle MouseRightButtonDown="Rectangle_MouseRightButtonDown"  MouseLeftButtonDown="Rectangle_MouseLeftButtonDown"  
                     Width="{x:Static local:CommonTypes.BLOCKNETWIDTH }"
                     Height="{x:Static local:CommonTypes.BLOCKNETHEIGHT}"
-                    Fill="{Binding BlockColor, Converter={StaticResource colorconverter}}"></Rectangle>                       
+                    Fill="{Binding BlockColor, Converter={StaticResource colorconverter}}">
+                        <Rectangle.Effect>
+                            <DropShadowEffect Opacity="{Binding IsSelected}"  x:Name="Dshadow" BlurRadius="5" ShadowDepth="0" Color="Black"/>
+                        </Rectangle.Effect>
+                    </Rectangle>                       
             </DataTemplate>
         </ItemsControl.ItemTemplate>
         <ItemsControl.ItemContainerStyle>

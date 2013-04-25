@@ -41,7 +41,7 @@ namespace Judas
         {
           CheckHitBlock(sender, e);
         }
-        void CheckHitBlock(object sender, MouseButtonEventArgs e)
+        void CheckHitBlock(object sender, MouseButtonEventArgs e, bool needPopBlock = true)
         {
             Canvas gameCanvas = UIHelper.FindVisualParent<Canvas>(sender as DependencyObject);
             //InitializeGame();
@@ -54,99 +54,105 @@ namespace Judas
             uint row;
             uint col;
             LocateBlock(top, left, out row, out col);
-            PopBlock(row, col);
+            if (needPopBlock)
+            {
+                PopBlock(row, col);
+            }
+            else
+            {
+                SingleBlock item = FindBlock(row, col);
+                MessageBox.Show("R" + item.Rowpos.ToString() + " C" + item.Columnpos.ToString() + " " + item.IsSelected.ToString()
+                            + " Color" + ((int)(item.BlockColor)).ToString());
+            }
         }
         void PopBlock(uint row, uint col)
         {
             SingleBlock block = FindBlock(row, col);
             bool isSelectionMode = block.IsSelected;
-            //for test
-            //blocks[(int)((row - 1) * 10 + col - 1)].BlockColor = CommonTypes.BlockColor.BlockColorBlack;
-            if (block != null)
+
+            if (!isSelectionMode)
             {
-                if (!isSelectionMode)
+                if (openlist.Count == 0)
                 {
                     openlist.Add(block);
                     AssembleSiblings(block);
                 }
-                if (openlist.Count > 1)
+            }
+            if (openlist.Count > 1)
+            {
+                //txtbox.Text = "Selected blocks:";
+                //PrintBlocks();
+
+                txtbox1.Text = "openlist\r\n exstingColumns=" + exstingColumns.ToString();
+
+                foreach (var item in openlist)
                 {
-                    //txtbox.Text = "Selected blocks:";
+                    //txtbox.Text += "\r\n" + item.Rowpos.ToString() + " " + item.Columnpos.ToString() + "\r\n" + item.BlockColor.ToString()+"\r\n";
+                    item.IsSelected = !item.IsSelected;
+                    //item.BlockColor = CommonTypes.BlockColor.BlockColorBlack;
+
+                    txtbox1.Text += "\r\n" + "R" + item.Rowpos.ToString() + " C" + item.Columnpos.ToString() + " " + item.IsSelected.ToString()
+                        + " Color" + ((int)(item.BlockColor)).ToString();
+
+                }
+                //txtbox.Text += "\r\ndeleted blocks:";
+                Refresh();
+
+            }
+            else//selected single block
+            {
+                openlist.Clear();
+            }
+
+            if (isSelectionMode)
+            {
+                openlist.Clear();
+            }
+
+        }
+
+        private void Refresh()
+        {
+            foreach (var item in openlist)
+            {
+                if (/*item.BlockColor == CommonTypes.BlockColor.BlockColorBlack && */!item.IsSelected)
+                {
                     //PrintBlocks();
+                    blocks.Remove(item);
+                    //txtbox.Text += "\r\n" + item.Rowpos.ToString() + " " + item.Columnpos.ToString() + "\r\n" + item.BlockColor.ToString() + "\r\n";
 
-                    txtbox1.Text = "openlist\r\n";
-
-                    foreach (var item in openlist)
+                    uint removedrow = item.Rowpos;
+                    uint removedcol = item.Columnpos;
+                    for (uint i = removedrow + 1; i <= CommonTypes.TOTALROWS; i++)
                     {
-                        //txtbox.Text += "\r\n" + item.Rowpos.ToString() + " " + item.Columnpos.ToString() + "\r\n" + item.BlockColor.ToString()+"\r\n";
-                        if (item.IsSelected)
+                        if (FindBlock(i, removedcol) != null)
                         {
-                            item.IsSelected = false;
-                        }
-                        else
-                        {
-                            item.IsSelected = true;
-                            item.BlockColor = CommonTypes.BlockColor.BlockColorBlack;
-                        }
-                        txtbox1.Text += item.Rowpos.ToString() + item.Columnpos.ToString() + item.IsSelected.ToString() + ((int)(item.BlockColor)).ToString() + exstingColumns.ToString()
-                        +"\r\n";
-
-                    }
-                    //txtbox.Text += "\r\ndeleted blocks:";
-                    foreach (var item in openlist)
-                    {
-                        if (item.BlockColor == CommonTypes.BlockColor.BlockColorBlack && !item.IsSelected)
-                        {
-                            //PrintBlocks();
-                            blocks.Remove(item);
-                            //txtbox.Text += "\r\n" + item.Rowpos.ToString() + " " + item.Columnpos.ToString() + "\r\n" + item.BlockColor.ToString() + "\r\n";
-
-                            uint removedrow = item.Rowpos;
-                            uint removedcol = item.Columnpos;
-                            for (uint i = removedrow + 1; i <= CommonTypes.TOTALROWS; i++)
-                            {
-                                if (FindBlock(i, removedcol) != null)
-                                {
-                                    FindBlock(i, removedcol).Rowpos--;
-                                    //MessageBox.Show("Test");
-                                }
-                            }
-
-                            if (removedrow == 1 && (FindBlock(item.Rowpos+1, item.Columnpos) == null))
-                            {
-                                //if one col is empty, shift left all right cols
-
-                                for (uint j = removedcol + 1; j <= exstingColumns; j++)
-                                {
-                                    for (uint i = 1; i <= CommonTypes.TOTALROWS; i++)
-                                    {
-                                        if (FindBlock(i, j) != null)
-                                        {
-                                            FindBlock(i, j).Columnpos--;
-                                        }
-                                    }
-                                    if (exstingColumns > 2)
-                                    {
-                                        exstingColumns--;
-                                    }
-                                }
-
-                            }
+                            FindBlock(i, removedcol).Rowpos--;
+                            //MessageBox.Show("Test");
                         }
                     }
 
+                    if (removedrow == 1 && (FindBlock(2, item.Columnpos) == null))
+                    {
+                        //if one col is empty, shift left all right cols
+
+                        for (uint j = removedcol + 1; j <= CommonTypes.TOTALCOLUMNS; j++)
+                        {
+                            for (uint i = 1; i <= CommonTypes.TOTALROWS; i++)
+                            {
+                                if (FindBlock(i, j) != null)
+                                {
+                                    FindBlock(i, j).Columnpos--;
+                                }
+                            }
+                            if (exstingColumns > 2)
+                            {
+                                exstingColumns--;
+                            }
+                        }
+
+                    }
                 }
-                else//selected single block
-                {
-                    openlist.Clear();
-                    checkedlist.Clear();
-                }
-                           
-                if (isSelectionMode)
-                {
-                    openlist.Clear();
-                    checkedlist.Clear();   
-                }            
             }
         }
 
@@ -178,7 +184,7 @@ namespace Judas
         }
         private void AssembleSiblings(SingleBlock block)
         {
-
+            checkedlist.Clear();
             CommonTypes.BlockColor checkcolor = block.BlockColor;        
 
             // left:    row, col - 1
@@ -236,6 +242,11 @@ namespace Judas
                 }
             }
             return null;
+        }
+
+        private void Rectangle_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            CheckHitBlock(sender,e,false);
         }
 
 

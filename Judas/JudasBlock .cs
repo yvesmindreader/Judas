@@ -17,23 +17,26 @@ namespace Judas
         uint columnpos;
         uint rowpos;
         CommonTypes.BlockColor blockColor;
-        int hasNeighbourTop = 1;
-        int hasNeighbourBottom = 1;
-        int hasNeighbourLeft = 1;
-        int hasNeighbourRight = 1;
         bool isSelected = false;
 
         public bool IsSelected
         {
             get { return isSelected; }
-            set { isSelected = value; }
+            set
+            {
+                isSelected = value;
+                if (PropertyChanged != null)
+                    PropertyChanged(this, new PropertyChangedEventArgs("IsSelected"));
+            }
         }
         public uint Columnpos
         {
             get { return columnpos; }
-            set { columnpos = value;
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs("Columnpos"));
+            set
+            {
+                columnpos = value;
+                if (PropertyChanged != null)
+                    PropertyChanged(this, new PropertyChangedEventArgs("Columnpos"));
             }
         }
         public uint Rowpos
@@ -53,25 +56,5 @@ namespace Judas
                     PropertyChanged(this, new PropertyChangedEventArgs("BlockColor"));
             }
         }
-        public int HasNeighbourTop
-        {
-            get { return hasNeighbourTop; }
-            set { hasNeighbourTop = value; }
-        }
-        public int HasNeighbourBottom
-        {
-            get { return hasNeighbourBottom; }
-            set { hasNeighbourBottom = value; }
-        }
-        public int HasNeighbourLeft
-        {
-            get { return hasNeighbourLeft; }
-            set { hasNeighbourLeft = value; }
-        }
-        public int HasNeighbourRight
-        {
-            get { return hasNeighbourRight; }
-            set { hasNeighbourRight = value; }
-        }     
     }
 }

@@ -74,22 +74,7 @@ namespace Judas
                for (uint col = 0; col < CommonTypes.TOTALCOLUMNS; col++)
                {
                    SingleBlock newBlock = new SingleBlock();
-                   if (row == 0)
-                   {
-                       newBlock.HasNeighbourTop = 0;
-                   }
-                   if (row == CommonTypes.TOTALROWS - 1)
-                   {
-                       newBlock.HasNeighbourBottom = 0;
-                   }
-                   if (col == 0)
-                   {
-                       newBlock.HasNeighbourLeft = 0;
-                   }
-                   if (col == CommonTypes.TOTALCOLUMNS - 1)
-                   {
-                       newBlock.HasNeighbourRight = 0;
-                   }
+
                    newBlock.Rowpos = row + 1;
                    newBlock.Columnpos = col + 1;
 
