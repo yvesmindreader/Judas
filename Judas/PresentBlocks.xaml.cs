@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Collections.ObjectModel;
-using System.Threading;
 
 namespace Judas
 {
@@ -77,25 +68,26 @@ namespace Judas
                     openlist.Add(block);
                     AssembleSiblings(block);
                 }
+                else 
+                {
+                    foreach (var item in openlist)
+                    {
+                        item.IsSelected = !item.IsSelected;
+                    }
+                    openlist.Clear();
+
+                    openlist.Add(block);
+                    AssembleSiblings(block);
+
+                }
             }
             if (openlist.Count > 1)
             {
-                //txtbox.Text = "Selected blocks:";
-                //PrintBlocks();
-
-                txtbox1.Text = "openlist\r\n exstingColumns=" + exstingColumns.ToString();
-
                 foreach (var item in openlist)
                 {
-                    //txtbox.Text += "\r\n" + item.Rowpos.ToString() + " " + item.Columnpos.ToString() + "\r\n" + item.BlockColor.ToString()+"\r\n";
                     item.IsSelected = !item.IsSelected;
-                    //item.BlockColor = CommonTypes.BlockColor.BlockColorBlack;
-
-                    txtbox1.Text += "\r\n" + "R" + item.Rowpos.ToString() + " C" + item.Columnpos.ToString() + " " + item.IsSelected.ToString()
-                        + " Color" + ((int)(item.BlockColor)).ToString();
 
                 }
-                //txtbox.Text += "\r\ndeleted blocks:";
                 Refresh();
 
             }
@@ -113,13 +105,17 @@ namespace Judas
 
         private void Refresh()
         {
+            RefreshRow();
+            FreshColumn();
+        }
+
+        private void RefreshRow()
+        {
             foreach (var item in openlist)
             {
-                if (/*item.BlockColor == CommonTypes.BlockColor.BlockColorBlack && */!item.IsSelected)
+                if (!item.IsSelected)
                 {
-                    //PrintBlocks();
                     blocks.Remove(item);
-                    //txtbox.Text += "\r\n" + item.Rowpos.ToString() + " " + item.Columnpos.ToString() + "\r\n" + item.BlockColor.ToString() + "\r\n";
 
                     uint removedrow = item.Rowpos;
                     uint removedcol = item.Columnpos;
@@ -128,59 +124,42 @@ namespace Judas
                         if (FindBlock(i, removedcol) != null)
                         {
                             FindBlock(i, removedcol).Rowpos--;
-                            //MessageBox.Show("Test");
                         }
                     }
 
-                    if (removedrow == 1 && (FindBlock(2, item.Columnpos) == null))
-                    {
-                        //if one col is empty, shift left all right cols
-
-                        for (uint j = removedcol + 1; j <= CommonTypes.TOTALCOLUMNS; j++)
-                        {
-                            for (uint i = 1; i <= CommonTypes.TOTALROWS; i++)
-                            {
-                                if (FindBlock(i, j) != null)
-                                {
-                                    FindBlock(i, j).Columnpos--;
-                                }
-                            }
-                            if (exstingColumns > 2)
-                            {
-                                exstingColumns--;
-                            }
-                        }
-
-                    }
                 }
             }
         }
 
-        private void PrintBlocks()
+        private void FreshColumn(uint startcol = 1)
         {
-            txtbox.Text = "";
-            int[] array = new int[CommonTypes.TOTALBLOCKS];
-            foreach (var item in blocks)
+            bool foundMissingColumn = false;
+            for (uint col = startcol; col <= exstingColumns; col++)
             {
-                array[(item.Rowpos - 1) * CommonTypes.TOTALCOLUMNS + item.Columnpos - 1] = (int)item.BlockColor;
-            }
-            for (int i = (int)CommonTypes.TOTALROWS - 1; i >= 0; i--)
-            {
-                for (int j = 0; j < CommonTypes.TOTALCOLUMNS; j++)
+                if (FindBlock(1, col) == null)
                 {
-                    txtbox.Text += array[i * CommonTypes.TOTALCOLUMNS + j].ToString();
+                    foundMissingColumn = true;
+                    startcol = col;
+                    for (uint j = col + 1; j <= exstingColumns; j++)
+                    {
+                        for (uint i = 1; i <= CommonTypes.TOTALROWS; i++)
+                        {
+                            if (FindBlock(i, j) != null)
+                            {
+                                FindBlock(i, j).Columnpos--;
+                            }
+                        }
+                    }
+                    if (exstingColumns > 2)
+                    {
+                        exstingColumns--;
+                    }
                 }
-                txtbox.Text += "\r\n";
             }
-            //timeDelay(5);
-        }
-        private void timeDelay(int iInterval)
-        {
-            DateTime now = DateTime.Now;
-            while (now.AddMilliseconds(iInterval) > DateTime.Now)
+            if (foundMissingColumn)
             {
+                FreshColumn(startcol);
             }
-            return;
         }
         private void AssembleSiblings(SingleBlock block)
         {
@@ -201,22 +180,22 @@ namespace Judas
                     if (!checkedlist.Contains(item))
                     {
                         var foundblock = FindBlock(row, col - 1);
-                        if (foundblock != null && !checkedlist.Contains(foundblock) && foundblock.BlockColor == checkcolor)
+                        if (foundblock != null && !checkedlist.Contains(foundblock) && !openlist.Contains(foundblock) && foundblock.BlockColor == checkcolor)
                         {
                             openlist.Add(foundblock);
                         }
                         foundblock = FindBlock(row, col + 1);
-                        if (foundblock != null && !checkedlist.Contains(foundblock) && foundblock.BlockColor == checkcolor)
+                        if (foundblock != null && !checkedlist.Contains(foundblock) && !openlist.Contains(foundblock) && foundblock.BlockColor == checkcolor)
                         {
                             openlist.Add(foundblock);
                         }
                         foundblock = FindBlock(row + 1, col);
-                        if (foundblock != null && !checkedlist.Contains(foundblock) && foundblock.BlockColor == checkcolor)
+                        if (foundblock != null && !checkedlist.Contains(foundblock) && !openlist.Contains(foundblock) && foundblock.BlockColor == checkcolor)
                         {
                             openlist.Add(foundblock);
                         }
                         foundblock = FindBlock(row - 1, col);
-                        if (foundblock != null && !checkedlist.Contains(foundblock) && foundblock.BlockColor == checkcolor)
+                        if (foundblock != null && !checkedlist.Contains(foundblock) && !openlist.Contains(foundblock) && foundblock.BlockColor == checkcolor)
                         {
                             openlist.Add(foundblock);
                         }
@@ -249,7 +228,10 @@ namespace Judas
             CheckHitBlock(sender,e,false);
         }
 
-
-
+        private void UserControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            blocks = this.DataContext as ObservableCollection<SingleBlock>;
+            exstingColumns = CommonTypes.TOTALCOLUMNS;
+        }
     }
 }

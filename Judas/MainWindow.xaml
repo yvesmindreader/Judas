@@ -5,10 +5,12 @@
         Title="MainWindow" WindowStartupLocation="CenterScreen" ResizeMode="NoResize"  Height="600" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>     
         <local:PresentBlocks Width="680" 
                              Height="480"
                              x:Name="gameboard"></local:PresentBlocks>
+        <Button Grid.Column="1"   Height="50"  Content="Reset Game" Click="Button_Click"></Button>
     </Grid>
 </Window>
